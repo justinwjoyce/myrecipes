@@ -22,3 +22,9 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+Primary Key
+Foreign Key
+Getter and Setters
+
+One to many and Many to many
