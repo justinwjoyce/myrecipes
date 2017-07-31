@@ -2,7 +2,8 @@ require 'test_helper'
 
 class RecipesEditTest < ActionDispatch::IntegrationTest
 	def setuo
-		@chef = Chef.create!(chefname: "justin", email: "justin@exampel.com")
+		@chef = Chef.create!(chefname: "justin", email: "justin@exampel.com",
+							password: "password", password_confirmation: "password")
 		@recipe = Recipe.create(name: "vegetable saute", description: "gerat vegetable oil", chef: @chef)
 	end
 

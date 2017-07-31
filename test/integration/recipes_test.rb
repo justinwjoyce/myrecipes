@@ -3,7 +3,8 @@ require 'test_helper'
 class RecipesTest < ActionDispatch::IntegrationTest
 
 	def setuo
-		@chef = Chef.create!(chefname: "justin", email: "justin@exampel.com")
+		@chef = Chef.create!(chefname: "justin", email: "justin@exampel.com",
+							password: "password", password_confirmation: "password")
 		@recipe = Recipe.create(name: "vegetable saute", description: "gerat vegetable oil", chef: @chef)
 		@recipe2 = @chef.recipes.build(name: "chicken salad", description: "great chicken dish")
 		@recipe2.save
