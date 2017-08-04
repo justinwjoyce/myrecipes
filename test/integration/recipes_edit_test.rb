@@ -1,34 +1,58 @@
 require 'test_helper'
 
-class RecipesEditTest < ActionDispatch::IntegrationTest
-	def setuo
-		@chef = Chef.create!(chefname: "justin", email: "justin@exampel.com",
-							password: "password", password_confirmation: "password")
-		@recipe = Recipe.create(name: "vegetable saute", description: "gerat vegetable oil", chef: @chef)
-	end
-
-	test "reject invalid recipe update" do
-		sign_in_as(@chef, "password")
-		get edit_recipe_path(@recipe)
-		assert_template 'recipes/edit'
-		patch recipe_path(@recipe), params: { recipe: { name: " ", description: "some description" } } 
-		assert_template 'recipes/edit'
-		assert_select 'h2.panel-title'
-		assert_select 'div.panel-body'
-	end
-
-	test "successfully edit a recipe" do
-		sign_in_as(@chef, "password")
-		get edit_recipe_path(@recipe)
-		assert_template 'recipes/edit'
-		updated_name = "updated recipe name"
-		updated_description = "updated recipe description"
-		patch recipe_path(@recipe), params: { recipe: { name: updated_name, description: updated_description } }
-		assert_redirected_to @recipe
-		#follow_redirect!
-		assert_not flash.empty?
-		@recipe.reload
-		assert_match updated_name, @recipe.name
-		assert_match updated_description, @recipe.description
-	end
+class ChefsEditTest < ActionDispatch::IntegrationTest
+  def setup
+    @chef = Chef.create!(chefname: "justin", email: "justin@example.com",
+                          password: "password", password_confirmation: "password")
+    @chef2 = Chef.create!(chefname: "john", email: "john@example.com",
+                        password: "password", password_confirmation: "password")
+    @admin_user = Chef.create!(chefname: "john1", email: "john1@example.com",
+                        password: "password", password_confirmation: "password", admin: true)                    
+  end
+  
+  test "reject an invalid edit" do
+    sign_in_as(@chef, "password")
+    get edit_chef_path(@chef)
+    assert_template 'chefs/edit'
+    patch chef_path(@chef), params: { chef: { chefname: " ", email: "justin@example.com" } }
+    assert_template 'chefs/edit'
+    assert_select 'h2.panel-title'
+    assert_select 'div.panel-body'
+  end
+  
+  test "accept valid edit" do
+    sign_in_as(@chef, "password")
+    get edit_chef_path(@chef)
+    assert_template 'chefs/edit'
+    patch chef_path(@chef), params: { chef: { chefname: "justin1", email: "justin1@example.com" } }
+    assert_redirected_to @chef
+    assert_not flash.empty?
+    @chef.reload
+    assert_match "justin1", @chef.chefname
+    assert_match "justin1@example.com", @chef.email
+  end
+  
+  test "accept edit attempt by admin user" do
+    sign_in_as(@admin_user, "password")
+    get edit_chef_path(@chef)
+    assert_template 'chefs/edit'
+    patch chef_path(@chef), params: { chef: { chefname: "justin3", email: "justin3@example.com" } }
+    assert_redirected_to @chef
+    assert_not flash.empty?
+    @chef.reload
+    assert_match "justin3", @chef.chefname
+    assert_match "justin3@example.com", @chef.email
+  end
+  
+  test "redirect edit attempt by another non-admin user" do
+    sign_in_as(@chef2, "password")
+    updated_name = "joe"
+    updated_email = "joe@example.com"
+    patch chef_path(@chef), params: { chef: { chefname: updated_name, email: updated_email } }
+    assert_redirected_to chefs_path
+    assert_not flash.empty?
+    @chef.reload
+    assert_match "justin", @chef.chefname
+    assert_match "justin@example.com", @chef.email
+  end  
 end
