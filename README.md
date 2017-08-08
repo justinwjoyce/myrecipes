@@ -15,8 +15,11 @@ Chef -
 -email address should be valid format.
 -email should be unigue.
 
-Primary Key
-Foreign Key
-Getter and Setters
+Ingredients
+-will have name attribute
+-will have many-to-many association with recipes
 
-One to many and Many to many
+Comments
+-will have description attribute
+-will have 2 one-to-many associations with recipes and chefs
+-therefore - will have chef_id and recipe_id foreign keys
