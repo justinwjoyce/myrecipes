@@ -1,3 +1,4 @@
+
 class RecipesController < ApplicationController
   before_action :set_recipe, only: [:show, :edit, :update, :destroy]
   before_action :require_user, except: [:index, :show]
@@ -52,7 +53,7 @@ class RecipesController < ApplicationController
     end
   
     def recipe_params
-      params.require(:recipe).permit(:name, :description)
+      params.require(:recipe).permit(:name, :description, ingredient_ids: [])
     end
     
     def require_same_user
